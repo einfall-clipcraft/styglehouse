@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Stygle House · Buchungsbestätigung</title>
+<meta name="description" content="Eure Buchungsbestätigung für das Stygle House.">
+<meta property="og:title" content="Stygle House · Buchungsbestätigung">
+<meta property="og:description" content="Buchung Nr. SH-0001. Bitte antippen und Ton anmachen.">
+<meta name="theme-color" content="#1f2e26">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1f2e26;
+    --forest-2: #2c4236;
+    --paper: #f7f1e5;
+    --paper-2: #efe6d3;
+    --ink: #22201c;
+    --muted: #6d665a;
+    --brass: #b8862f;
+    --brass-soft: #e4c88f;
+    --coral: #d4583c;
+    --line: #d9cdb4;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Instrument Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--forest);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+  body.locked { overflow: hidden; height: 100vh; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  /* ---------- Splash: Türhänger ---------- */
+  .splash {
+    position: fixed; inset: 0; z-index: 50;
+    display: grid; place-items: center;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #2f4739 0%, var(--forest) 60%);
+    transition: opacity .7s ease, visibility .7s;
+  }
+  .splash.gone { opacity: 0; visibility: hidden; }
+  .door {
+    display: flex; flex-direction: column; align-items: center; gap: 28px;
+    padding: 24px;
+  }
+  .hanger {
+    position: relative;
+    width: 190px; height: 400px;
+    border: none; padding: 0; background: none;
+    perspective: 900px;
+    transform-origin: 50% 0;
+    animation: swing 3.2s ease-in-out infinite;
+  }
+  .hanger-inner {
+    position: absolute; inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .9s cubic-bezier(.3,1.4,.5,1);
+  }
+  .hanger.flipped .hanger-inner { transform: rotateY(180deg); }
+  .hanger-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 18px 18px 26px 26px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 30px 18px 26px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.06);
+  }
+  .hanger-face::before {
+    content: ""; width: 74px; height: 74px; border-radius: 50%;
+    background: var(--forest);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,.4);
+    margin-bottom: 34px; flex: none;
+  }
+  .hanger-front { background: var(--coral); color: var(--paper); }
+  .hanger-back { background: var(--paper); color: var(--forest); transform: rotateY(180deg); }
+  .hanger-face .big {
+    font-family: var(--display); font-weight: 800;
+    font-size: 34px; line-height: .95; text-align: center; letter-spacing: -.01em;
+  }
+  .hanger-face .small {
+    margin-top: auto; font-family: var(--mono); font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase; text-align: center; opacity: .85;
+  }
+  .hanger-back .big { font-style: italic; font-weight: 600; }
+  .door-hint {
+    color: var(--brass-soft); font-family: var(--mono); font-size: 12px;
+    letter-spacing: .16em; text-transform: uppercase; text-align: center;
+    animation: blink 2.4s ease-in-out infinite;
+  }
+  @keyframes swing { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes blink { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+
+  /* ---------- Musik-Knopf ---------- */
+  .music {
+    position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 40;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--forest); color: var(--paper);
+    border: 1px solid rgba(255,255,255,.18); border-radius: 999px;
+    padding: 9px 14px 9px 11px; font-size: 13px; font-weight: 500;
+    box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s;
+  }
+  .music.show { opacity: 1; transform: none; }
+  .eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; width: 16px; }
+  .eq i { display: block; width: 3px; background: var(--brass-soft); border-radius: 1px; height: 4px; }
+  .music.playing .eq i { animation: eq .9s ease-in-out infinite; }
+  .music.playing .eq i:nth-child(2) { animation-delay: -.3s; }
+  .music.playing .eq i:nth-child(3) { animation-delay: -.6s; }
+  .music.playing .eq i:nth-child(4) { animation-delay: -.15s; }
+  @keyframes eq { 0%,100% { height: 3px; } 50% { height: 14px; } }
+
+  /* ---------- Layout ---------- */
+  main { max-width: 560px; margin: 0 auto; padding: 0 16px 120px; }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Hero */
+  .hero { color: var(--paper); text-align: center; padding: 64px 4px 40px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--brass-soft);
+  }
+  .hero h1 {
+    font-family: var(--display); font-weight: 400; font-style: italic;
+    font-size: clamp(56px, 17vw, 92px); line-height: .9; letter-spacing: -.03em;
+    margin: 18px 0 10px;
+  }
+  .hero h1 span { display: inline-block; opacity: 0; transform: translateY(40px) rotate(4deg); }
+  .hero.in h1 span { animation: letter .8s cubic-bezier(.2,1.3,.4,1) forwards; }
+  @keyframes letter { to { opacity: 1; transform: none; } }
+  .stars { font-size: 24px; letter-spacing: 6px; color: var(--brass); margin: 6px 0 2px; }
+  .stars b { display: inline-block; font-weight: 400; animation: twinkle 3s ease-in-out infinite; }
+  .stars b:nth-child(2) { animation-delay: .3s; } .stars b:nth-child(3) { animation-delay: .6s; }
+  .stars b:nth-child(4) { animation-delay: .9s; } .stars b:nth-child(5) { animation-delay: 1.2s; }
+  @keyframes twinkle { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25) rotate(12deg); opacity: .75; } }
+  .rating { font-size: 13px; color: #b9c2b5; }
+  .hero p.lead {
+    font-family: var(--display); font-size: 21px; line-height: 1.4;
+    margin: 30px auto 0; max-width: 30ch; color: #e8e1d2;
+  }
+  .scroll-cue {
+    margin-top: 40px; font-family: var(--mono); font-size: 11px; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--brass-soft);
+  }
+  .scroll-cue::after {
+    content: ""; display: block; width: 1px; height: 40px; margin: 12px auto 0;
+    background: linear-gradient(var(--brass-soft), transparent);
+    animation: drip 1.8s ease-in-out infinite;
+    transform-origin: top;
+  }
+  @keyframes drip { 0% { transform: scaleY(0); } 60% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* Ticket */
+  .ticket {
+    position: relative;
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 30px 22px 26px;
+    margin: 0 0 22px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.25);
+  }
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 10px;
+    background: radial-gradient(circle at 7px 0, var(--forest) 6px, transparent 6.5px) 0 0 / 14px 10px repeat-x;
+  }
+  .ticket::before { top: 0; }
+  .ticket::after { bottom: 0; transform: rotate(180deg); }
+  .ticket h2 {
+    font-family: var(--display); font-weight: 600; font-size: 30px; line-height: 1.05;
+    letter-spacing: -.015em; margin: 4px 0 6px;
+  }
+  .ticket .eyebrow { color: var(--brass); }
+  .ticket .sub { color: var(--muted); margin: 0 0 18px; font-size: 15px; }
+
+  /* Beleg-Zeilen */
+  .rows { margin: 8px 0 0; padding: 0; list-style: none; }
+  .rows li {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 14px;
+    padding: 13px 0; border-top: 1px dashed var(--line);
+  }
+  .rows li:last-child { border-bottom: 1px dashed var(--line); }
+  .rows .k { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+  .rows .v { font-weight: 600; text-align: right; }
+  .rows .note { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
+  .price { font-family: var(--display); font-size: 26px; font-weight: 800; }
+  .strike { text-decoration: line-through; text-decoration-color: var(--coral); text-decoration-thickness: 2px; color: var(--muted); font-weight: 400; margin-right: 6px; }
+
+  .guests { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 6px; }
+  .guest {
+    border: 1.5px solid var(--forest); border-radius: 999px; background: transparent;
+    padding: 7px 14px; font-weight: 600; font-size: 15px;
+    transition: background .2s, color .2s, transform .2s;
+  }
+  .guest[aria-pressed="true"] { background: var(--forest); color: var(--paper); }
+  .guest:active { transform: scale(.95); }
+  .guest-card {
+    min-height: 3.2em; margin: 8px 0 4px; padding: 12px 14px; border-radius: 6px;
+    background: var(--paper-2); font-size: 15px;
+  }
+  .guest-card b { font-family: var(--display); font-size: 18px; }
+
+  /* Reisedaten */
+  .dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .date {
+    background: var(--forest); color: var(--paper); border-radius: 6px; padding: 14px 14px 16px;
+  }
+  .date .k { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--brass-soft); }
+  .date .d { font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; margin: 8px 0 2px; }
+  .date .w { font-weight: 600; }
+  .date .n { font-size: 13px; color: #c8cfc5; margin-top: 6px; line-height: 1.4; }
+  .countdown {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 16px 0 6px; text-align: center;
+  }
+  .countdown div { background: var(--paper-2); border-radius: 6px; padding: 10px 0 8px; }
+  .countdown b { display: block; font-family: var(--display); font-size: 30px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .countdown span { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .count-note { font-size: 14px; color: var(--muted); text-align: center; margin: 4px 0 0; }
+
+  /* Flip-Karten */
+  .tap-hint { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--coral); margin: -6px 0 14px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card {
+    position: relative; height: 232px; border: none; padding: 0; background: none;
+    perspective: 1000px; text-align: left;
+  }
+  .card-inner {
+    position: absolute; inset: 0; transform-style: preserve-3d;
+    transition: transform .7s cubic-bezier(.3,1.3,.5,1);
+  }
+  .card.open .card-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; border-radius: 8px; padding: 14px;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: flex; flex-direction: column;
+  }
+  .front { background: var(--paper-2); border: 1.5px solid var(--line); }
+  .front .ico { font-size: 34px; line-height: 1; }
+  .front .t { font-family: var(--display); font-size: 20px; font-weight: 600; line-height: 1.1; margin-top: auto; }
+  .front .tag { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--brass); margin-top: 6px; }
+  .back { background: var(--forest); color: var(--paper); transform: rotateY(180deg); font-size: 13.5px; line-height: 1.42; overflow: auto; }
+  .back b { font-family: var(--display); font-size: 16px; display: block; margin-bottom: 4px; color: var(--brass-soft); }
+  .card:not(.open) .front { animation: nudge 5s ease-in-out infinite; }
+  .card:nth-child(2) .front { animation-delay: .8s; } .card:nth-child(3) .front { animation-delay: 1.6s; }
+  .card:nth-child(4) .front { animation-delay: 2.4s; } .card:nth-child(5) .front { animation-delay: 3.2s; }
+  .card:nth-child(6) .front { animation-delay: 4s; }
+  @keyframes nudge { 0%, 88%, 100% { transform: rotate(0); } 92% { transform: rotate(-2deg); } 96% { transform: rotate(2deg); } }
+
+  /* Daumen-Training */
+  .console {
+    background: var(--forest); border-radius: 26px; padding: 18px 16px 22px;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,.25), 0 10px 24px rgba(0,0,0,.18);
+  }
+  .screen {
+    background: #c9d4b0; color: #24321f; border-radius: 10px; padding: 12px 14px;
+    font-family: var(--mono); box-shadow: inset 0 2px 8px rgba(0,0,0,.3); min-height: 104px;
+  }
+  .screen .hud { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+  .screen .msg { font-size: 15px; line-height: 1.35; margin-top: 10px; min-height: 2.7em; }
+  .screen .score { font-family: var(--display); font-size: 34px; font-weight: 800; line-height: 1; }
+  .pad { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; margin-top: 18px; }
+  .start {
+    border: none; border-radius: 999px; padding: 10px 16px; background: var(--brass); color: var(--forest);
+    font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500;
+    box-shadow: 0 4px 0 #7f5b1d;
+  }
+  .start:active { transform: translateY(3px); box-shadow: 0 1px 0 #7f5b1d; }
+  .start:disabled { opacity: .4; }
+  .diamond {
+    justify-self: end; display: grid; --gb: min(58px, 14vw); grid-template-columns: repeat(3, var(--gb)); grid-template-rows: repeat(3, var(--gb));
+    touch-action: manipulation;
+  }
+  .gbtn {
+    width: var(--gb); height: var(--gb); border-radius: 50%; border: none;
+    background: #37503f; color: #9fb09f; font-family: var(--display); font-weight: 800; font-size: 20px;
+    box-shadow: 0 5px 0 #121b16; transition: background .12s, color .12s, transform .08s, box-shadow .08s;
+    -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  }
+  .gbtn[data-b="X"] { grid-column: 2; grid-row: 1; }
+  .gbtn[data-b="Y"] { grid-column: 1; grid-row: 2; }
+  .gbtn[data-b="A"] { grid-column: 3; grid-row: 2; }
+  .gbtn[data-b="B"] { grid-column: 2; grid-row: 3; }
+  .gbtn.lit { background: var(--coral); color: var(--paper); box-shadow: 0 5px 0 #8f3622, 0 0 22px rgba(212,88,60,.7); }
+  .gbtn:active { transform: translateY(4px); box-shadow: 0 1px 0 #121b16; }
+  .gbtn.miss { animation: shake .3s; }
+  .gbtn.pop { animation: pop .18s ease-out; }
+  @keyframes pop { 0% { transform: scale(.82); } 100% { transform: scale(1); } }
+  .screen.over { background: #e3b4a6; }
+  .haptic { position: fixed; left: -9999px; top: 0; opacity: 0; pointer-events: none; }
+  @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .best { font-size: 13px; color: var(--muted); margin: 12px 0 0; text-align: center; }
+
+  /* Pflichten */
+  .duties { list-style: none; margin: 0; padding: 0; counter-reset: d; }
+  .duties li {
+    position: relative; padding: 14px 0 14px 46px; border-top: 1px dashed var(--line);
+  }
+  .duties li:last-child { border-bottom: 1px dashed var(--line); }
+  .duties li::before {
+    counter-increment: d; content: "★";
+    position: absolute; left: 0; top: 14px; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--coral); color: var(--paper); display: grid; place-items: center;
+    font-family: var(--display); font-weight: 800; font-size: 16px;
+  }
+  .duties strong { display: block; font-family: var(--display); font-size: 19px; font-weight: 600; line-height: 1.2; }
+  .duties span { display: block; color: var(--muted); font-size: 15px; margin-top: 2px; }
+  .worth {
+    display: inline-block; margin-top: 8px; font-style: normal; font-family: var(--mono); font-size: 12px;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--forest);
+    background: var(--brass-soft); border-radius: 4px; padding: 3px 8px;
+  }
+  .worth s { color: var(--muted); margin-right: 6px; text-decoration-color: var(--coral); text-decoration-thickness: 2px; }
+
+  /* Koffer */
+  .pack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pack button {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px dashed var(--muted); border-radius: 6px; background: transparent;
+    padding: 8px 12px; font-size: 15px; transition: all .25s;
+  }
+  .pack button .box { width: 16px; height: 16px; border: 1.5px solid currentColor; border-radius: 3px; display: grid; place-items: center; font-size: 11px; }
+  .pack button.done { border-style: solid; border-color: var(--forest); background: var(--forest); color: var(--paper); }
+  .pack button.done .box::after { content: "✓"; }
+  .pack-msg { min-height: 1.5em; font-size: 14px; color: var(--muted); margin: 12px 0 0; }
+
+  /* AGB */
+  .agb { background: var(--paper); }
+  .para { font-family: var(--display); font-size: 64px; font-weight: 800; color: var(--coral); line-height: .8; margin-bottom: 14px; }
+  .agb h2 { font-size: 36px; }
+  .agb .fine { font-size: 12px; color: var(--muted); font-family: var(--mono); letter-spacing: .02em; margin: 0 0 16px; }
+  .toggles { display: grid; gap: 8px; margin: 18px 0 20px; }
+  .toggle {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border: 1.5px solid var(--line); background: #fff8; border-radius: 8px; padding: 12px 14px;
+    text-align: left; transition: border-color .2s, background .2s;
+  }
+  .toggle .sw {
+    flex: none; width: 46px; height: 26px; border-radius: 999px; background: var(--line); position: relative; transition: background .25s;
+  }
+  .toggle .sw::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .3s cubic-bezier(.3,1.5,.5,1);
+  }
+  .toggle[aria-checked="true"] { border-color: var(--forest); background: #e7eee6; }
+  .toggle[aria-checked="true"] .sw { background: var(--forest); }
+  .toggle[aria-checked="true"] .sw::after { transform: translateX(20px); }
+  .actions { position: relative; min-height: 150px; }
+  .accept {
+    width: 100%; border: none; border-radius: 8px; padding: 17px 18px;
+    background: var(--coral); color: var(--paper);
+    font-family: var(--display); font-size: 21px; font-weight: 600;
+    box-shadow: 0 8px 0 #a8422b; transition: transform .1s, box-shadow .1s, opacity .3s, filter .3s;
+  }
+  .accept:disabled { filter: grayscale(1); opacity: .45; cursor: not-allowed; }
+  .accept:not(:disabled) { animation: pulse 1.6s ease-in-out infinite; }
+  .accept:not(:disabled):active { transform: translateY(6px); box-shadow: 0 2px 0 #a8422b; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+  .nope {
+    position: absolute; left: 50%; top: 96px; transform: translateX(-50%);
+    background: none; border: none; color: var(--muted); font-size: 14px; text-decoration: underline;
+    white-space: nowrap; transition: left .35s cubic-bezier(.3,1.5,.5,1), top .35s cubic-bezier(.3,1.5,.5,1);
+    padding: 8px;
+  }
+  .nope-msg { min-height: 1.4em; font-size: 14px; color: var(--coral); text-align: center; margin: 6px 0 0; }
+
+  /* Bestätigt */
+  .confirmed { display: none; text-align: center; padding-top: 8px; }
+  .confirmed.show { display: block; }
+  .stamp {
+    display: inline-block; margin: 10px 0 18px;
+    border: 4px solid var(--coral); color: var(--coral); border-radius: 10px;
+    padding: 8px 18px; font-family: var(--display); font-weight: 800; font-size: 34px; letter-spacing: .06em;
+    transform: rotate(-8deg); opacity: 0;
+  }
+  .confirmed.show .stamp { animation: stamp .55s cubic-bezier(.2,1.6,.4,1) forwards; }
+  @keyframes stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-20deg); } 100% { opacity: .92; transform: scale(1) rotate(-8deg); } }
+  .confirmed p { margin: 0 auto 10px; max-width: 34ch; }
+  .confirmed .big { font-family: var(--display); font-size: 22px; line-height: 1.3; }
+
+  /* Bewertung */
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1.5px solid var(--forest); border-radius: 999px; background: transparent;
+    padding: 6px 13px; font-size: 14px; font-weight: 600; transition: background .2s, color .2s;
+  }
+  .chip[aria-pressed="true"] { background: var(--forest); color: var(--paper); }
+  .rate { display: flex; gap: 6px; }
+  .rate button {
+    border: none; background: none; padding: 0 2px; font-size: 40px; line-height: 1; color: var(--line);
+    transition: transform .2s cubic-bezier(.3,1.6,.5,1), color .2s;
+  }
+  .rate button.on { color: var(--brass); transform: scale(1.12); }
+  .rate-msg { min-height: 2.8em; font-size: 14px; color: var(--coral); margin: 6px 0 0; }
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical; border: 1.5px solid var(--line); border-radius: 8px;
+    background: #fffaf0; padding: 12px; font: inherit; font-size: 16px; color: var(--ink);
+  }
+  textarea:focus { outline: 2px solid var(--brass); border-color: var(--brass); }
+  .linkbtn { background: none; border: none; padding: 6px 0; color: var(--forest); font-weight: 600; text-decoration: underline; font-size: 14px; }
+  .preview {
+    margin-top: 18px; background: #fff; border-radius: 10px; padding: 16px; border: 1px solid var(--line);
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  }
+  .pv-head { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--coral); color: var(--paper);
+    display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 18px; flex: none;
+  }
+  .pv-name { font-weight: 600; line-height: 1.2; }
+  .pv-meta { font-size: 12px; color: var(--muted); }
+  .pv-stars { color: var(--brass); letter-spacing: 2px; margin: 10px 0 4px; font-size: 18px; }
+  .pv-tags { font-size: 13px; color: var(--muted); }
+  .pv-text { margin: 8px 0 0; white-space: pre-wrap; }
+  .pv-reply { margin-top: 12px; padding: 10px 12px; background: var(--paper-2); border-radius: 8px; font-size: 13px; color: var(--muted); }
+  .pv-reply b { color: var(--ink); }
+  .send {
+    width: 100%; margin-top: 18px; border: none; border-radius: 8px; padding: 15px 18px;
+    background: var(--forest); color: var(--paper); font-weight: 600; font-size: 17px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 6px 0 #0f1813;
+  }
+  .send:active { transform: translateY(4px); box-shadow: 0 2px 0 #0f1813; }
+  .send:disabled { opacity: .4; }
+  .send.copied { background: var(--coral); box-shadow: 0 6px 0 #a8422b; }
+  .wa-open { display: block; text-align: center; margin-top: 12px; color: var(--forest); font-weight: 600; font-size: 15px; }
+  .wa-open[hidden] { display: none; }
+  .send-note { font-size: 13px; color: var(--muted); text-align: center; margin: 10px 0 0; }
+
+  footer { color: #b9c2b5; text-align: center; font-size: 14px; padding: 30px 10px 0; }
+  footer .sig { font-family: var(--display); font-style: italic; font-size: 26px; color: var(--paper); margin: 6px 0 4px; }
+
+  canvas#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+  @media (min-width: 520px) {
+    .ticket { padding: 36px 32px 30px; }
+    .card { height: 196px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+    .reveal { opacity: 1; transform: none; }
+    .hero h1 span { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<!-- Splash -->
+<div class="splash" id="splash">
+  <div class="door">
+    <button class="hanger" id="hanger" aria-label="Buchungsbestätigung öffnen">
+      <div class="hanger-inner">
+        <div class="hanger-face hanger-front">
+          <div class="big">BITTE<br>NICHT<br>STÖREN</div>
+          <div class="small">Stygle House<br>Zimmer: alle</div>
+        </div>
+        <div class="hanger-face hanger-back">
+          <div class="big">Herein&shy;spaziert</div>
+          <div class="small">Ihr wurdet<br>erwartet</div>
+        </div>
+      </div>
+    </button>
+    <div class="door-hint">Antippen · Ton an</div>
+  </div>
+</div>
+
+<button class="music" id="music" aria-pressed="false">
+  <span class="eq"><i></i><i></i><i></i><i></i></span>
+  <span id="musicLabel">Lobby-Musik an</span>
+</button>
+
+<canvas id="confetti"></canvas>
+
+<main>
+  <!-- Hero -->
+  <header class="hero reveal" id="hero">
+    <div class="eyebrow">Buchungsbestätigung · Nr. SH-0001</div>
+    <h1 aria-label="Stygle House"><span>Stygle</span> <span>House</span></h1>
+    <div class="stars" aria-label="Fünf Sterne"><b>★</b><b>★</b><b>★</b><b>★</b><b>★</b></div>
+    <div class="rating">5,0 · 1 Bewertung (unsere eigene)</div>
+    <p class="lead">Ihr habt gebucht. Gut, genau genommen haben wir für euch gebucht. Bezahlt ist auch schon. So viel Service gibt es nur hier.</p>
+    <div class="scroll-cue">Weiter nach unten</div>
+  </header>
+
+  <!-- Buchung -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Eure Buchung</div>
+    <h2>Die Eckdaten</h2>
+    <p class="sub">Tippt auf einen Namen, dann seht ihr, in welcher Kategorie ihr gebucht seid.</p>
+    <div class="guests" id="guests">
+      <button class="guest" data-g="tanja" aria-pressed="false">Tanja</button>
+      <button class="guest" data-g="andi" aria-pressed="false">Andi</button>
+      <button class="guest" data-g="mika" aria-pressed="false">Mika</button>
+      <button class="guest" data-g="nela" aria-pressed="false">Nela</button>
+    </div>
+    <div class="guest-card" id="guestCard" aria-live="polite">Vier Gäste. Null Werkzeugkoffer. So steht es zumindest in der Buchung.</div>
+    <ul class="rows">
+      <li><span class="k">Zimmer</span><span class="v">Das ganze Haus</span></li>
+      <li><span class="k">Lage</span><span class="v">Kennt ihr</span><span class="note">Anfahrtsbeschreibung entfällt.</span></li>
+      <li><span class="k">Schlüssel</span><span class="v">Habt ihr schon</span></li>
+      <li><span class="k">Preis</span><span class="v price"><span class="strike">Unbezahlbar</span>0,00 €</span><span class="note">Bereits beglichen, in Form von zwei Jahren Baustelle.</span></li>
+    </ul>
+  </section>
+
+  <!-- Reisedaten -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Reisedaten</div>
+    <h2>Wann ihr kommt</h2>
+    <div class="dates">
+      <div class="date">
+        <div class="k">Anreise</div>
+        <div class="d">06.11.</div>
+        <div class="w">Freitag</div>
+        <div class="n">Wann immer ihr wollt. Einen Check-in-Schalter gibt es nicht.</div>
+      </div>
+      <div class="date">
+        <div class="k">Abreise</div>
+        <div class="d">08.11.</div>
+        <div class="w">Sonntag</div>
+        <div class="n">Wann immer ihr wollt. Late Check-out gilt bis einen Tag vor unserer Rückreise.</div>
+      </div>
+    </div>
+    <div class="countdown" id="countdown" aria-live="off">
+      <div><b id="cd-d">0</b><span>Tage</span></div>
+      <div><b id="cd-h">0</b><span>Std</span></div>
+      <div><b id="cd-m">0</b><span>Min</span></div>
+      <div><b id="cd-s">0</b><span>Sek</span></div>
+    </div>
+    <p class="count-note" id="countNote">bis Freitag. Die Betten sind jetzt schon bereit. Wir auch.</p>
+  </section>
+
+  <!-- Leistungen -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Im Preis inbegriffen</div>
+    <h2>Was alles drin ist</h2>
+    <p class="sub">Also in 0,00 €.</p>
+    <div class="tap-hint">Karten antippen fürs Kleingedruckte</div>
+    <div class="cards">
+      <button class="card" aria-label="Getränke">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🥤</div><div class="t">Getränke</div><div class="tag">All inclusive</div></div>
+          <div class="face back"><b>All inclusive.</b>Für Groß und Klein (Sortiment altersgerecht). Weitere stehen irgendwo rum. Im Zweifel im Keller.</div>
+        </div>
+      </button>
+      <button class="card" aria-label="Essen">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🍕</div><div class="t">Essen</div><div class="tag">Selbstbedienung</div></div>
+          <div class="face back"><b>Bedient euch!</b>Alles, was ihr zu essen findet, dürft ihr auch essen. Das ist keine Höflichkeitsfloskel. Das ist eine Anweisung.</div>
+        </div>
+      </button>
+      <button class="card" aria-label="Unterhaltung">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🎮</div><div class="t">Unterhaltung</div><div class="tag">Switch</div></div>
+          <div class="face back"><b>Die Switch liegt bereit.</b>Ob ihr trotzdem miteinander redet, liegt nicht in unserer Verantwortung.</div>
+        </div>
+      </button>
+      <button class="card" aria-label="Zimmer">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🛏️</div><div class="t">Zimmer</div><div class="tag">Frisch bezogen</div></div>
+          <div class="face back"><b>Bettwäsche &amp; Handtücher</b>inklusive, Betten frisch bezogen. Beschwerden nimmt die Hausleitung nicht entgegen. Die ist im Urlaub.</div>
+        </div>
+      </button>
+      <button class="card" aria-label="Endreinigung">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🧽</div><div class="t">Endreinigung</div><div class="tag">Gebucht</div></div>
+          <div class="face back"><b>Ist gebucht.</b>Aufräumen und Putzen sind für euch nicht vorgesehen. Zuwiderhandlungen werden mit einer weiteren Buchung bestraft.</div>
+        </div>
+      </button>
+      <button class="card" aria-label="Müll">
+        <div class="card-inner">
+          <div class="face front"><div class="ico">🗑️</div><div class="t">Müll</div><div class="tag">Kein Thema</div></div>
+          <div class="face back"><b>Nicht rausstellen.</b>Die Müllabfuhr kommt in der Zeit sowieso nicht. Wir haben das extra so gelegt. (Haben wir nicht.)</div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Daumen-Training -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Zusatzleistung</div>
+    <h2>Daumen-Aufwärm&shy;training</h2>
+    <p class="sub">Damit an der Switch niemand mit kalten Daumen anfängt. Drückt den Knopf, der leuchtet, so oft ihr könnt. 20 Sekunden. Ein falscher Knopf, und die Runde ist vorbei.</p>
+    <div class="console">
+      <div class="screen" id="gScreen">
+        <div class="hud"><span>Treffer</span><span id="gTime">20,0 s</span></div>
+        <div class="score" id="gScore">0</div>
+        <div class="msg" id="gMsg">Bereit, wenn ihr es seid.</div>
+      </div>
+      <div class="pad">
+        <button class="start" id="gStart">Start</button>
+        <div class="diamond" id="diamond">
+          <button class="gbtn" data-b="X">X</button>
+          <button class="gbtn" data-b="Y">Y</button>
+          <button class="gbtn" data-b="A">A</button>
+          <button class="gbtn" data-b="B">B</button>
+        </div>
+      </div>
+    </div>
+    <label class="haptic" id="hapticLbl" aria-hidden="true"><input type="checkbox" switch tabindex="-1"></label>
+    <p class="best" id="gBest">Hausrekord: noch keiner. Das Haus ist ja auch neu.</p>
+  </section>
+
+  <!-- Gegenleistungen -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Gratis dazu</div>
+    <h2>Euer exklusives Erlebnis&shy;paket</h2>
+    <p class="sub">Nur für Gäste des Stygle House. Nicht übertragbar, nicht verhandelbar, nicht abwählbar.</p>
+    <ol class="duties">
+      <li><strong>Urban-Gardening-Experience</strong><span>Ein meditatives Erlebnis im direkten Kontakt mit echten Zimmerpflanzen. Ihr gießt, sie wachsen. Wasser inklusive.</span><em class="worth"><s>49 €</s> gratis</em></li>
+      <li><strong>Post-Safari</strong><span>Eine geführte Expedition zu unserem Briefkasten, inklusive Leerung. Termin: ab Samstag. Freitag ist Ruhetag, für die Post und für euch.</span><em class="worth"><s>39 €</s> gratis</em></li>
+    </ol>
+  </section>
+
+  <!-- Gepäck -->
+  <section class="ticket reveal">
+    <div class="eyebrow">Gepäck</div>
+    <h2>Bitte mitbringen</h2>
+    <p class="sub">Mehr braucht ihr nicht. Den Rest kennt ihr ja.</p>
+    <div class="pack" id="pack">
+      <button><span class="box"></span>Kulturbeutel</button>
+      <button><span class="box"></span>Schlafanzüge</button>
+      <button><span class="box"></span>Gemütliche Kleidung</button>
+      <button><span class="box"></span>Großen Hunger</button>
+    </div>
+    <p class="pack-msg" id="packMsg" aria-live="polite"></p>
+  </section>
+
+  <!-- AGB -->
+  <section class="ticket agb reveal" id="agb">
+    <div class="para">§ 1</div>
+    <div class="eyebrow">Zwingende Voraussetzung</div>
+    <h2>Fühlt euch wie zuhause.</h2>
+    <p class="fine">Das ist keine Bitte, sondern eine Buchungsbedingung. Weitere Paragraphen gibt es nicht. § 2 lautet: siehe § 1.</p>
+    <div class="toggles" id="toggles">
+      <button class="toggle" role="switch" aria-checked="false"><span>Tanja fühlt sich wie zuhause</span><span class="sw"></span></button>
+      <button class="toggle" role="switch" aria-checked="false"><span>Andi fühlt sich wie zuhause</span><span class="sw"></span></button>
+      <button class="toggle" role="switch" aria-checked="false"><span>Mika fühlt sich wie zuhause</span><span class="sw"></span></button>
+      <button class="toggle" role="switch" aria-checked="false"><span>Nela fühlt sich wie zuhause</span><span class="sw"></span></button>
+    </div>
+    <div class="actions" id="actions">
+      <button class="accept" id="accept" disabled>Buchung annehmen</button>
+      <button class="nope" id="nope">Wir fühlen uns lieber wie im Hotel</button>
+    </div>
+    <p class="nope-msg" id="nopeMsg" aria-live="polite"></p>
+
+    <div class="confirmed" id="confirmed" aria-live="polite">
+      <div class="stamp">BESTÄTIGT</div>
+      <p class="big">Wir freuen uns sehr, euch als erste Gäste im Stygle House begrüßen zu dürfen.</p>
+      <p>Persönlich leider nicht. Aber das Haus kennt ihr ja.</p>
+      <p><small>Umtausch ausgeschlossen.</small></p>
+    </div>
+  </section>
+
+  <!-- Bewertung -->
+  <section class="ticket reveal" id="review">
+    <div class="eyebrow">Nach eurem Aufenthalt</div>
+    <h2>Bewertet uns auf Stygle</h2>
+    <p class="sub">Das führende Bewertungsportal für Häuser, die Stygle House heißen. Marktanteil: 100 %.</p>
+
+    <div class="label">Wer bewertet?</div>
+    <div class="chips" id="rvWho">
+      <button class="chip" aria-pressed="true" data-v="Alle vier">Alle vier</button>
+      <button class="chip" aria-pressed="false" data-v="Tanja">Tanja</button>
+      <button class="chip" aria-pressed="false" data-v="Andi">Andi</button>
+      <button class="chip" aria-pressed="false" data-v="Mika">Mika</button>
+      <button class="chip" aria-pressed="false" data-v="Nela">Nela</button>
+    </div>
+
+    <div class="label">Sterne</div>
+    <div class="rate" id="rvStars" role="radiogroup" aria-label="Sterne">
+      <button data-n="1" aria-label="1 Stern">★</button>
+      <button data-n="2" aria-label="2 Sterne">★</button>
+      <button data-n="3" aria-label="3 Sterne">★</button>
+      <button data-n="4" aria-label="4 Sterne">★</button>
+      <button data-n="5" aria-label="5 Sterne">★</button>
+    </div>
+    <p class="rate-msg" id="rvStarMsg" aria-live="polite"></p>
+
+    <div class="label">Was war am besten?</div>
+    <div class="chips" id="rvTags">
+      <button class="chip" aria-pressed="false">Gefriertruhe</button>
+      <button class="chip" aria-pressed="false">Getränke</button>
+      <button class="chip" aria-pressed="false">Switch</button>
+      <button class="chip" aria-pressed="false">Betten</button>
+      <button class="chip" aria-pressed="false">Ruhe</button>
+      <button class="chip" aria-pressed="false">Hausleitung abwesend</button>
+    </div>
+
+    <div class="label">Eure Worte</div>
+    <textarea id="rvText" maxlength="600" placeholder="Erzählt der Welt (also uns) von eurem Aufenthalt."></textarea>
+    <button class="linkbtn" id="rvIdea">Keine Idee? Vorschlag einsetzen</button>
+
+    <div class="preview" aria-live="polite">
+      <div class="pv-head">
+        <div class="avatar" id="pvAvatar">A</div>
+        <div>
+          <div class="pv-name" id="pvName">Alle vier</div>
+          <div class="pv-meta">Verifizierter Aufenthalt · 06.–08.11.2026</div>
+        </div>
+      </div>
+      <div class="pv-stars" id="pvStars">☆☆☆☆☆</div>
+      <div class="pv-tags" id="pvTags"></div>
+      <p class="pv-text" id="pvText"></p>
+      <div class="pv-reply"><b>Antwort der Hausleitung:</b> Vielen Dank für eure Bewertung! (Automatisch erstellt. Wir sind im Urlaub.)</div>
+    </div>
+
+    <button class="send" id="rvSend" disabled>Text für WhatsApp kopieren</button>
+    <a class="wa-open" id="rvOpen" href="https://wa.me/" target="_blank" rel="noopener" hidden>WhatsApp direkt öffnen</a>
+    <p class="send-note" id="rvNote">Erst Sterne vergeben. Die Hausleitung ist da eigen.</p>
+  </section>
+
+  <footer class="reveal">
+    <div>Herzliche Grüße von der Hausleitung</div>
+    <div class="sig">Laura &amp; Steffi</div>
+    <div>derzeit nicht erreichbar, vermutlich am Strand</div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Lobby-Musik (Web Audio, kein Download nötig) ---------- */
+  let ctx = null, master = null, delay = null, timer = null, playing = false;
+  let step = 0, nextTime = 0;
+  const BPM = 96, STEP = 60 / BPM / 2; // Achtel
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const chords = [
+    { bass: [48, 55], notes: [60, 64, 67, 71] }, // Cmaj7
+    { bass: [45, 52], notes: [57, 60, 64, 67] }, // Am7
+    { bass: [50, 57], notes: [60, 62, 65, 69] }, // Dm7
+    { bass: [43, 50], notes: [59, 62, 65, 67] }  // G7
+  ];
+  const melody = [
+    [[0,76,2],[2,74,1],[3,72,3],[6,71,2]],
+    [[0,72,2],[3,76,2],[5,79,3]],
+    [[0,77,3],[3,76,1],[4,74,2],[6,72,2]],
+    [[0,71,4],[5,74,1],[6,77,2]],
+    [[0,76,3],[3,79,2],[5,76,3]],
+    [[0,72,2],[2,76,2],[4,74,4]],
+    [[0,74,2],[2,77,2],[4,81,2],[6,79,2]],
+    [[0,77,2],[2,74,2],[4,71,2],[6,72,2]]
+  ];
+  let noiseBuf = null;
+
+  function initAudio() {
+    if (ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor();
+    master.connect(comp); comp.connect(ctx.destination);
+    delay = ctx.createDelay(1); delay.delayTime.value = STEP * 3;
+    const fb = ctx.createGain(); fb.gain.value = 0.28;
+    const wet = ctx.createGain(); wet.gain.value = 0.22;
+    delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(master);
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+
+  function tone(freq, t, dur, type, vol, toDelay, attack = 0.01) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master);
+    if (toDelay) g.connect(delay);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  function piano(m, t, dur, vol) {
+    tone(mtof(m), t, dur, 'sine', vol);
+    tone(mtof(m) * 2.001, t, dur * 0.5, 'triangle', vol * 0.25);
+  }
+  function bass(m, t, dur) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = 'triangle'; o.frequency.value = mtof(m);
+    f.type = 'lowpass'; f.frequency.value = 600;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.32, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(f); f.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  function shaker(t, vol) {
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = 7000;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+    s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t + 0.08);
+  }
+  function vibe(m, t, dur) {
+    tone(mtof(m), t, dur + 0.6, 'sine', 0.13, true, 0.005);
+    tone(mtof(m) * 4, t, 0.25, 'sine', 0.02, false, 0.002);
+  }
+
+  function scheduleStep(s, t) {
+    const bar = Math.floor(s / 8) % 8, slot = s % 8;
+    const ch = chords[bar % 4];
+    // Bossa-Bass: 1 und 3+
+    if (slot === 0) bass(ch.bass[0], t, STEP * 2.6);
+    if (slot === 3) bass(ch.bass[1], t, STEP * 0.9);
+    if (slot === 4) bass(ch.bass[1], t, STEP * 2.6);
+    // Akkord-Tupfer
+    if (slot === 0 || slot === 3 || slot === 6) {
+      ch.notes.forEach((n, i) => piano(n, t + i * 0.008, STEP * (slot === 6 ? 2.2 : 1.6), 0.045));
+    }
+    // Shaker auf jeder Achtel
+    shaker(t, slot % 2 === 0 ? 0.05 : 0.025);
+    // Melodie
+    melody[bar].forEach(([sl, m, len]) => { if (sl === slot) vibe(m, t, STEP * len); });
+  }
+
+  function tick() {
+    while (nextTime < ctx.currentTime + 0.15) {
+      scheduleStep(step, nextTime);
+      nextTime += STEP; step++;
+    }
+  }
+
+  const musicBtn = document.getElementById('music');
+  const musicLabel = document.getElementById('musicLabel');
+  function startMusic() {
+    initAudio(); if (!ctx) return;
+    ctx.resume();
+    if (playing) return;
+    playing = true;
+    nextTime = ctx.currentTime + 0.08;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 1.5);
+    timer = setInterval(tick, 25);
+    musicBtn.classList.add('playing'); musicBtn.setAttribute('aria-pressed', 'true');
+    musicLabel.textContent = 'Lobby-Musik aus';
+  }
+  function stopMusic() {
+    if (!ctx || !playing) return;
+    playing = false;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+    clearInterval(timer);
+    musicBtn.classList.remove('playing'); musicBtn.setAttribute('aria-pressed', 'false');
+    musicLabel.textContent = 'Lobby-Musik an';
+  }
+  function fanfare() {
+    initAudio(); if (!ctx) return;
+    ctx.resume();
+    const t = ctx.currentTime + 0.05;
+    if (!playing) { master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(0.55, t); setTimeout(() => { if (!playing) master.gain.setValueAtTime(0, ctx.currentTime); }, 2500); }
+    [[72,0],[76,0.12],[79,0.24],[84,0.36]].forEach(([m, d]) => vibe(m, t + d, 0.5));
+    [60, 64, 67, 72].forEach(n => piano(n, t + 0.36, 1.6, 0.06));
+  }
+  musicBtn.addEventListener('click', () => playing ? stopMusic() : startMusic());
+  let wasPlaying = false;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { wasPlaying = playing; stopMusic(); }
+    else if (wasPlaying) startMusic();
+  });
+
+  /* ---------- Splash ---------- */
+  const splash = document.getElementById('splash');
+  const hanger = document.getElementById('hanger');
+  hanger.addEventListener('click', () => {
+    startMusic();
+    hanger.classList.add('flipped');
+    setTimeout(() => {
+      splash.classList.add('gone');
+      document.body.classList.remove('locked');
+      musicBtn.classList.add('show');
+      document.getElementById('hero').classList.add('in');
+    }, reduce ? 50 : 2000);
+  }, { once: true });
+
+  /* ---------- Einblenden beim Scrollen ---------- */
+  const hero = document.getElementById('hero');
+  hero.querySelectorAll('h1 span').forEach((s, i) => s.style.animationDelay = (0.15 + i * 0.18) + 's');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting && e.target !== hero) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => { if (el !== hero) io.observe(el); });
+
+  /* ---------- Gäste ---------- */
+  const guestText = {
+    tanja: '<b>Tanja</b> · Kategorie „Endlich Feierabend“. Zuständig an diesem Wochenende für: nichts. Wirklich nichts.',
+    andi: '<b>Andi</b> · Kategorie „Bauherr im Ruhestand“. Gilt für genau ein Wochenende. Der Akkuschrauber hat ebenfalls Urlaub.',
+    mika: '<b>Mika</b> · Kategorie „Großer Bruder“. Vorrecht an der Switch: verhandelbar.',
+    nela: '<b>Nela</b> · Kategorie „Kleine Schwester“. Vorrecht an der Switch: ebenfalls verhandelbar.'
+  };
+  const card = document.getElementById('guestCard');
+  document.querySelectorAll('.guest').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.guest').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    card.innerHTML = guestText[b.dataset.g];
+  }));
+
+  /* ---------- Countdown ---------- */
+  const target = new Date('2026-11-06T00:00:00+01:00').getTime();
+  const el = id => document.getElementById(id);
+  function cd() {
+    let diff = target - Date.now();
+    if (diff <= 0) {
+      document.getElementById('countdown').style.display = 'none';
+      el('countNote').textContent = Date.now() < target + 3 * 864e5
+        ? 'Es ist so weit. Ihr dürftet längst da sein. Falls nicht: Worauf wartet ihr?'
+        : 'Vorbei. Aber keine Sorge, das war nicht das letzte Mal.';
+      return;
+    }
+    const d = Math.floor(diff / 864e5); diff -= d * 864e5;
+    const h = Math.floor(diff / 36e5); diff -= h * 36e5;
+    const m = Math.floor(diff / 6e4); diff -= m * 6e4;
+    const s = Math.floor(diff / 1e3);
+    el('cd-d').textContent = d; el('cd-h').textContent = h;
+    el('cd-m').textContent = String(m).padStart(2, '0'); el('cd-s').textContent = String(s).padStart(2, '0');
+  }
+  cd(); setInterval(cd, 1000);
+
+  /* ---------- Flip-Karten ---------- */
+  document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => c.classList.toggle('open')));
+
+  /* ---------- Daumen-Training ---------- */
+  const gBtns = [...document.querySelectorAll('.gbtn')];
+  const gStart = el('gStart'), gScore = el('gScore'), gTime = el('gTime'), gMsg = el('gMsg'), gBest = el('gBest');
+  let gOn = false, gPts = 0, gLit = null, gEnd = 0, gTimer = null;
+  let best = 0;
+  try { best = parseInt(localStorage.getItem('stygle-best') || '0', 10) || 0; } catch (e) {}
+  if (best) gBest.textContent = 'Hausrekord auf diesem Handy: ' + best + ' Treffer.';
+  function blip(m, dur = 0.12, vol = 0.12) {
+    initAudio(); if (!ctx) return; ctx.resume();
+    if (!playing) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setValueAtTime(0.55, ctx.currentTime); }
+    tone(mtof(m), ctx.currentTime + 0.01, dur, 'square', vol * 0.5);
+  }
+  // Vibration: Android über navigator.vibrate, iPhone (ab iOS 18) über einen versteckten Schalter
+  const hapticLbl = el('hapticLbl');
+  function buzz(pattern) {
+    if (navigator.vibrate) { try { navigator.vibrate(pattern); } catch (e) {} return; }
+    const pulses = Array.isArray(pattern) ? Math.ceil(pattern.length / 2) : 1;
+    for (let i = 0; i < pulses; i++) setTimeout(() => { try { hapticLbl.click(); } catch (e) {} }, i * 110);
+  }
+  function lightNext() {
+    const next = gBtns[Math.floor(Math.random() * gBtns.length)];
+    if (gLit && gLit !== next) gLit.classList.remove('lit');
+    gLit = next;
+    gLit.classList.remove('pop'); void gLit.offsetWidth;
+    gLit.classList.add('lit', 'pop');
+  }
+  function verdict(p) {
+    if (p <= 0) return 'Null. Habt ihr das Handy falsch rum gehalten?';
+    if (p < 15) return 'Ausbaufähig. Bitte vor der Anreise nochmal üben.';
+    if (p < 25) return 'Solide. Für Erwachsene sogar beachtlich.';
+    if (p < 35) return 'Daumen warm. Switch-Freigabe erteilt.';
+    if (p < 45) return 'Beeindruckend. Wer von den Kindern war das?';
+    return 'Das ist kein Mensch mehr. Das ist eine Maschine.';
+  }
+  function gReset() {
+    gOn = false; clearInterval(gTimer);
+    if (gLit) gLit.classList.remove('lit', 'pop'); gLit = null;
+    gStart.disabled = false; gStart.textContent = 'Nochmal';
+  }
+  function gStop() {
+    gReset();
+    gTime.textContent = '0,0 s';
+    gMsg.textContent = verdict(gPts);
+    if (gPts > best) {
+      best = gPts;
+      try { localStorage.setItem('stygle-best', String(best)); } catch (e) {}
+      gBest.textContent = 'Neuer Hausrekord: ' + best + ' Treffer!';
+      [72, 76, 79, 84].forEach((m, i) => setTimeout(() => blip(m, 0.18), i * 110));
+      buzz([60, 60, 60, 60, 200]);
+    } else {
+      blip(55, 0.35);
+      buzz(120);
+    }
+  }
+  const overLines = ['Falscher Knopf. Game Over.', 'Daneben. Runde vorbei.', 'Das war der falsche. Die anderen haben es gesehen.'];
+  function gOver(b) {
+    const lost = gPts;
+    gReset();
+    gScreen.classList.add('over');
+    b.classList.remove('miss'); void b.offsetWidth; b.classList.add('miss');
+    gMsg.textContent = overLines[Math.floor(Math.random() * overLines.length)] + (lost ? ' ' + lost + (lost === 1 ? ' Treffer verfällt.' : ' Treffer verfallen.') : '') + ' Neu starten.';
+    gPts = 0; gScore.textContent = '0';
+    blip(48, 0.3); setTimeout(() => blip(43, 0.45), 160);
+    buzz([90, 50, 90, 50, 250]);
+  }
+  const gScreen = el('gScreen');
+  gStart.addEventListener('click', () => {
+    gPts = 0; gScore.textContent = '0'; gMsg.textContent = 'Los!';
+    gScreen.classList.remove('over');
+    gStart.disabled = true; gOn = true;
+    gEnd = performance.now() + 20000;
+    lightNext();
+    buzz(30);
+    gTimer = setInterval(() => {
+      const left = Math.max(0, gEnd - performance.now());
+      gTime.textContent = (left / 1000).toFixed(1).replace('.', ',') + ' s';
+      if (left <= 0) gStop();
+    }, 100);
+  });
+  gBtns.forEach(b => b.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if (!gOn) { b.classList.remove('miss'); void b.offsetWidth; b.classList.add('miss'); gMsg.textContent = 'Erst Start drücken. So viel Geduld muss sein.'; return; }
+    if (b === gLit) {
+      gPts++; gScore.textContent = gPts; blip(79 + (gPts % 5) * 2, 0.08);
+      buzz(15);
+      if (gPts === 10) gMsg.textContent = 'Zweistellig. Respekt.';
+      else if (gPts === 25) gMsg.textContent = 'Jetzt wird es ernst.';
+      lightNext();
+    } else {
+      gOver(b);
+    }
+  }));
+
+  /* ---------- Bewertung ---------- */
+  let rvName = 'Alle vier', rvN = 0, rvFix = 0, rvTimer = null;
+  const rvStarBtns = [...document.querySelectorAll('#rvStars button')];
+  const rvText = el('rvText'), rvSend = el('rvSend');
+  const lowMsgs = {
+    1: 'Ein Stern? Die Hausleitung liest das erst nach dem Urlaub. Bis dahin korrigieren wir das mal.',
+    2: 'Zwei Sterne. Interessant. Wir gehen von einem Tippfehler aus.',
+    3: 'Drei Sterne. Solide Mitte. Leider nicht im Angebot.',
+    4: 'Vier Sterne? Fast. Den fehlenden schenken wir euch.'
+  };
+  const fixMsgs = ['Wir haben uns erlaubt, eure Bewertung zu korrigieren. Danke für die 5 Sterne!', 'Schon wieder korrigiert. Wir geben nicht auf.', 'Ihr seid hartnäckig. Wir auch.'];
+  function paintStars(n) { rvStarBtns.forEach(b => b.classList.toggle('on', +b.dataset.n <= n)); }
+  function rvRender() {
+    el('pvName').textContent = rvName;
+    el('pvAvatar').textContent = rvName === 'Alle vier' ? '4' : rvName[0];
+    el('pvStars').textContent = '★'.repeat(rvN) + '☆'.repeat(5 - rvN);
+    const tags = [...document.querySelectorAll('#rvTags .chip[aria-pressed="true"]')].map(b => b.textContent);
+    el('pvTags').textContent = tags.length ? 'Besonders gut: ' + tags.join(', ') : '';
+    el('pvText').textContent = rvText.value.trim();
+    rvSend.disabled = rvN < 5;
+    el('rvNote').textContent = rvN < 5 ? 'Erst Sterne vergeben. Die Hausleitung ist da eigen.' : 'Kopieren, in WhatsApp einfügen, an uns schicken. Veröffentlicht wird nichts.';
+    rvSend.classList.remove('copied'); rvSend.textContent = 'Text für WhatsApp kopieren';
+    el('rvOpen').hidden = true;
+  }
+  document.querySelectorAll('#rvWho .chip').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#rvWho .chip').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    rvName = b.dataset.v; rvRender();
+  }));
+  document.querySelectorAll('#rvTags .chip').forEach(b => b.addEventListener('click', () => {
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); rvRender();
+  }));
+  rvStarBtns.forEach(b => b.addEventListener('click', () => {
+    clearTimeout(rvTimer);
+    const n = +b.dataset.n;
+    rvN = n; paintStars(n);
+    if (n < 5) {
+      el('rvStarMsg').textContent = lowMsgs[n];
+      rvSend.disabled = true;
+      rvTimer = setTimeout(() => {
+        let k = n;
+        const up = setInterval(() => {
+          k++; paintStars(k); blip(72 + k * 2, 0.1);
+          if (k >= 5) {
+            clearInterval(up); rvN = 5;
+            el('rvStarMsg').textContent = fixMsgs[Math.min(rvFix++, fixMsgs.length - 1)];
+            rvRender();
+          }
+        }, 220);
+      }, 1400);
+    } else {
+      el('rvStarMsg').textContent = 'Fünf Sterne. Eine ausgezeichnete Wahl, wenn wir das sagen dürfen.';
+      blip(84, 0.2);
+    }
+    rvRender();
+  }));
+  rvText.addEventListener('input', rvRender);
+  const ideas = [
+    'Lage top, den Weg kannten wir schon. Einziger Kritikpunkt: Am Sonntag mussten wir wieder gehen.',
+    'Personal sehr zurückhaltend, eigentlich gar nicht da. Genau so muss das sein.',
+    'Gefriertruhe voll, Betten frisch, Hausleitung weg. Mehr kann man von einem Haus nicht verlangen.',
+    'Kinder glücklich, Eltern ausgeschlafen. Statistisch eigentlich unmöglich.',
+    'Die Endreinigung haben wir nicht gesehen, aber wir vertrauen darauf, dass es sie gibt.'
+  ];
+  let ideaI = Math.floor(Math.random() * ideas.length);
+  el('rvIdea').addEventListener('click', () => { rvText.value = ideas[ideaI++ % ideas.length]; rvRender(); });
+  rvSend.addEventListener('click', () => {
+    const tags = [...document.querySelectorAll('#rvTags .chip[aria-pressed="true"]')].map(b => b.textContent);
+    let msg = '⭐⭐⭐⭐⭐ Bewertung für das Stygle House\nvon ' + rvName + '\n';
+    if (tags.length) msg += '\nBesonders gut: ' + tags.join(', ') + '\n';
+    const t = rvText.value.trim();
+    if (t) msg += '\n„' + t + '“\n';
+    msg += '\nVerifizierter Aufenthalt · 06.–08.11.2026';
+    const done = ok => {
+      if (ok) {
+        rvSend.classList.add('copied');
+        rvSend.textContent = 'Kopiert! Jetzt in WhatsApp einfügen';
+        el('rvNote').textContent = 'Chat öffnen, lange ins Textfeld tippen, „Einsetzen“. Fertig.';
+        blip(84, 0.15); buzz(30);
+      } else {
+        el('rvNote').textContent = 'Kopieren hat nicht geklappt. Über den Link darunter geht es trotzdem.';
+      }
+      const open = el('rvOpen');
+      open.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+      open.hidden = false;
+    };
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = msg; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, msg.length);
+      let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove(); done(ok);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(msg).then(() => done(true), fallback);
+    } else fallback();
+  });
+  rvRender();
+
+  /* ---------- Koffer ---------- */
+  const packMsgs = ['Ein Anfang.', 'Halb gepackt.', 'Fast fertig.', 'Gepackt. Mehr braucht ihr wirklich nicht. Die Werkzeugkiste bleibt daheim, der Hunger kommt mit.'];
+  const packBtns = [...document.querySelectorAll('#pack button')];
+  packBtns.forEach(b => b.addEventListener('click', () => {
+    b.classList.toggle('done');
+    const n = packBtns.filter(x => x.classList.contains('done')).length;
+    el('packMsg').textContent = n ? packMsgs[n - 1] : '';
+  }));
+
+  /* ---------- § 1 ---------- */
+  const toggles = [...document.querySelectorAll('.toggle')];
+  const accept = el('accept');
+  toggles.forEach(t => t.addEventListener('click', () => {
+    t.setAttribute('aria-checked', t.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    accept.disabled = !toggles.every(x => x.getAttribute('aria-checked') === 'true');
+  }));
+
+  const nope = el('nope'), actions = el('actions');
+  const nopeLines = ['Netter Versuch.', 'Siehe § 1.', 'Ein Hotel hat keine Switch.', 'Wir haben das gesehen.', 'Nein.'];
+  let nopeCount = 0;
+  function dodge(e) {
+    if (e && e.cancelable) e.preventDefault();
+    const w = actions.clientWidth, bw = nope.offsetWidth;
+    const x = Math.random() * Math.max(0, w - bw) + bw / 2;
+    const y = 92 + Math.random() * 30;
+    nope.style.left = x + 'px'; nope.style.top = y + 'px';
+    el('nopeMsg').textContent = nopeLines[nopeCount++ % nopeLines.length];
+  }
+  nope.addEventListener('pointerenter', dodge);
+  nope.addEventListener('touchstart', dodge, { passive: false });
+  nope.addEventListener('click', dodge);
+
+  accept.addEventListener('click', () => {
+    accept.disabled = true;
+    actions.style.display = 'none';
+    el('nopeMsg').textContent = '';
+    el('toggles').style.display = 'none';
+    el('confirmed').classList.add('show');
+    fanfare();
+    confetti();
+    el('confirmed').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  });
+
+  /* ---------- Konfetti ---------- */
+  const cv = el('confetti'), cx = cv.getContext('2d');
+  function confetti() {
+    if (reduce) return;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; cx.scale(dpr, dpr);
+    const colors = ['#d4583c', '#b8862f', '#e4c88f', '#2c4236', '#f7f1e5'];
+    const parts = Array.from({ length: 160 }, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .55,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 16 - 6,
+      r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+      c: colors[Math.floor(Math.random() * colors.length)]
+    }));
+    const start = performance.now();
+    (function frame(now) {
+      cx.clearRect(0, 0, innerWidth, innerHeight);
+      parts.forEach(p => {
+        p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r);
+        cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.cos(p.r * 2));
+        cx.restore();
+      });
+      if (now - start < 4500) requestAnimationFrame(frame);
+      else { cx.setTransform(1, 0, 0, 1, 0, 0); cx.clearRect(0, 0, cv.width, cv.height); }
+    })(start);
+  }
+})();
+</script>
+</body>
+</html>
